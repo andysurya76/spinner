@@ -141,7 +141,7 @@ void setup()
   SDO_send(CAN_id,OP_MODE,0,CYCLIC_POS);
   
   // Read current position from drive
-  current_pos = SDO_read(CAN_id,ACTUAL_POS,0) / ENCODER_COUNTS_PER_UNIT;
+  current_pos = (float) SDO_read(CAN_id,ACTUAL_POS,0) / (float)ENCODER_COUNTS_PER_UNIT;
   Serial.print ("Position read from drive = ");
   Serial.println(current_pos,4);
 
@@ -282,7 +282,7 @@ void loop()
   if (millis() - last_TELM_time >= TELM_INTERVAL)       // Read actual position from drive and send TELM
   {
     last_TELM_time = millis();
-    current_pos = (SDO_read(CAN_id,ACTUAL_POS,0) / ENCODER_COUNTS_PER_UNIT);
+    current_pos = ((float)SDO_read(CAN_id,ACTUAL_POS,0) / (float)ENCODER_COUNTS_PER_UNIT);
     send_TELM(current_pos);
     
     //Serial.print("TELM Position = ");
@@ -441,6 +441,9 @@ int serial_packet_read(float *position)
           read_CAN();
           Serial.print("Setp = ");
           Serial.println(pos_in.f);
+          current_pos = pos_in.f;
+          target_pos = last_pos = current_pos;
+          segment_velocity = 0;
           return 0;
         }
         else
@@ -526,6 +529,9 @@ int serial_packet_read(float *position)
           read_CAN();
           Serial.print("Setp = ");
           Serial.println(pos_in.f);
+          current_pos = pos_in.f;
+          target_pos = last_pos = current_pos;
+          segment_velocity = 0;
           return 0;
         }
         else
